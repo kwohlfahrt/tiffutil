@@ -21,7 +21,7 @@ if __name__ == "__main__":
     if args.projection == 'mean':
         data = mean(data, axis=0)
     elif args.projection == 'median':
-        data = median(data, axis=0)
+        data = median(data, axis=0, overwrite_input=True)
     elif args.projection == 'max':
         data = np_max(data, axis=0)
     elif args.projection == 'min':
