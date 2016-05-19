@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from tifffile import TiffFile, imsave
-from numpy import mean, median, percentile, max as np_max, min as np_min
+from numpy import mean, median, percentile, amax, amin
 
 if __name__ == "__main__":
     from argparse import ArgumentParser
@@ -25,9 +25,9 @@ if __name__ == "__main__":
     elif args.projection == 'quartile':
         data = percentile(data, 25.0, axis=0, overwrite_input=True)
     elif args.projection == 'max':
-        data = np_max(data, axis=0)
+        data = amax(data, axis=0)
     elif args.projection == 'min':
-        data = np_min(data, axis=0)
+        data = amin(data, axis=0)
     else:
         # Should never happen
         raise ValueError("Invalid projection method.")
