@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from tifffile import TiffFile, imsave
-from numpy import mean, median, max as np_max, min as np_min
+from numpy import mean, median, percentile, max as np_max, min as np_min
 
 if __name__ == "__main__":
     from argparse import ArgumentParser
@@ -10,7 +10,7 @@ if __name__ == "__main__":
     parser.add_argument("image", type=str, help="The image to project")
     parser.add_argument("output", type=str, help="The output filename")
     parser.add_argument("--projection", type=str,
-                        choices={"mean", "max", "min", "median"}, default="max",
+                        choices={"mean", "max", "min", "median", "quartile"}, default="max",
                         help="The projection to use.")
 
     args = parser.parse_args()
@@ -22,6 +22,8 @@ if __name__ == "__main__":
         data = mean(data, axis=0)
     elif args.projection == 'median':
         data = median(data, axis=0, overwrite_input=True)
+    elif args.projection == 'quartile':
+        data = percentile(data, 25.0, axis=0, overwrite_input=True)
     elif args.projection == 'max':
         data = np_max(data, axis=0)
     elif args.projection == 'min':
