@@ -14,6 +14,11 @@ def parseROI(roi):
         r = r + (slice(int(start), end),)
     return r
 
+def cropFile(data, roi_path):
+    with roi_path.open("r") as f:
+        rois = map(tuple, map(reversed, map(parseROI, f)))
+        yield from map(lambda roi: data[(Ellipsis,) + roi], rois)
+
 if __name__ == "__main__":
     from argparse import ArgumentParser
 
@@ -26,9 +31,6 @@ if __name__ == "__main__":
     output_prefix = args.prefix if args.prefix is not None else args.image.parent / args.image.stem
 
     image = imread(str(args.image))
-    with args.rois.open("r") as f:
-        rois = map(tuple, map(reversed, map(parseROI, f)))
-        views = map(lambda roi: image[(Ellipsis,) + roi], rois)
-        for i, view in enumerate(views):
-            outfile_name = "{}{}.tif".format(output_prefix, i)
-            imsave(outfile_name, view)
+    for i, view in enumerate(fromFile(image, args.rois)):
+        outfile_name = "{}{}.tif".format(output_prefix, i)
+        imsave(outfile_name, view)
