@@ -7,6 +7,10 @@ from pathlib import Path
 
 from tifffile import TiffFile, TiffWriter
 
+def unstack(data, nstacks):
+    slices = (slice(i, None, nstacks) for i in range(nstacks))
+    return (data[s] for s in slices)
+
 if __name__ == "__main__":
     from argparse import ArgumentParser
 
