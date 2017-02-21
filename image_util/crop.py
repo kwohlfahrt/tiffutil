@@ -19,14 +19,15 @@ def cropFile(data, roi_path):
         rois = map(tuple, map(reversed, map(parseROI, f)))
         yield from map(lambda roi: data[(Ellipsis,) + roi], rois)
 
-if __name__ == "__main__":
+def main(args=None):
     from argparse import ArgumentParser
+    from sys import argv
 
     parser = ArgumentParser(description="Crop an image (sequence) based on a list of ROIs")
     parser.add_argument("image", type=Path, help="The image to read")
     parser.add_argument("rois", type=Path, help="The ROIs to extract from the image")
     parser.add_argument("--prefix", type=str, help="The prefix for the output images.")
-    args = parser.parse_args()
+    args = parser.parse_args(argv[1:] if args is None else args)
 
     output_prefix = args.prefix if args.prefix is not None else args.image.parent / args.image.stem
 
@@ -34,3 +35,6 @@ if __name__ == "__main__":
     for i, view in enumerate(fromFile(image, args.rois)):
         outfile_name = "{}{}.tif".format(output_prefix, i)
         imsave(outfile_name, view)
+
+if __name__ == "__main__":
+    main()
