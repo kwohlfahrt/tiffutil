@@ -7,7 +7,7 @@ def main(args=None):
         args = argv
     _, program, *args = args
 
-    mod = import_module('.{}'.format(program), 'image_util')
+    mod = import_module('.{}'.format(program), 'tiffutil')
     mod.main(args)
 
 if __name__ == "__main__":
