@@ -4,7 +4,7 @@ from tifffile import TiffFile, TiffWriter
 from numpy import mean, median, percentile, fmax, fmin
 from enum import Enum
 from multiprocessing import Pool
-from itertools import chain
+from itertools import chain, islice
 from functools import reduce, partial
 from operator import add
 from contextlib import ExitStack
@@ -12,7 +12,7 @@ from pathlib import Path
 
 def rollingMedian(data, width, pool=None):
     from functools import partial
-    from itertools import tee, islice, count
+    from itertools import tee, count
     from numpy import stack, median
 
     slices = tee(data, width)
@@ -24,11 +24,12 @@ def rollingMedian(data, width, pool=None):
     else:
         return pool.imap(partial(median, axis=0), slices)
 
-def tiffChain(series):
+def tiffChain(series, start=None, end=None):
     from tifffile.tifffile import TiffPageSeries
     from itertools import chain
 
-    return chain.from_iterable(map(TiffPageSeries.asarray, series))
+    # TODO: Skip files at start which are not read
+    return islice(chain.from_iterable(map(TiffPageSeries.asarray, series)), start, end)
 
 def multiReduce(functions, iterable):
     from functools import reduce
@@ -59,13 +60,18 @@ def main(args=None):
                         help="The projection to use.")
     parser.add_argument("--filter-size", type=int, default=1,
                         help="The number of frames to running-median filter")
+    parser.add_argument("--start", type=int, default=None,
+                        help="The frame to start the projection")
+    parser.add_argument("--end", type=int, default=None,
+                        help="The frame to end the projection")
     args = parser.parse_args(argv[1:] if args is None else args)
 
     functions = (count, Projection[args.projection].value)
     with ExitStack() as stack:
         for tif in args.images:
             stack.enter_context(tif)
-        frames = tiffChain(chain.from_iterable(tif.series for tif in args.images))
+        frames = tiffChain(chain.from_iterable(tif.series for tif in args.images),
+                           args.start, args.end)
         nframes, projection = multiReduce(
             functions, rollingMedian(frames, args.filter_size, pool=Pool())
         )
