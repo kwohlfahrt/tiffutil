@@ -16,8 +16,8 @@ the [pip documentation][pip-install].
 # Usage
 
 The entry point `tiffutil` is installed. This should be followed by the command
-to be used, e.g. `crop`, `unstack` or `project`. For further details, consult
-the help provided for each command:
+to be used, e.g. `crop`, `unstack`, `smooth` or `project`. For further details,
+consult the help provided for each command:
 
     tiffutil unstack --help
     
