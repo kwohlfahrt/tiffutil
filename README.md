@@ -43,6 +43,17 @@ situations. For example:
 
 projects the first 4000 frames of a video (split over two files) into `out.tif`
 using a maximum intensity projection.
+
+## Smooth
+
+The smooth function runs a [rolling-ball][rolling-ball] smoothing pass over each
+image in a stack of images. The smoothed image approximates the background. Pass
+the `--correct` option to subtract the background instead of extracting it.
+
+    tiffutil smooth --radius 2.0 in001.tif in002.tif out.tif
+
+*Note*: 3D (or nD) smoothing would be straightforward to add, please file a bug
+if this is a feature you would like.
     
 [setuptools]: https://docs.python.org/3.3/install/#the-new-standard-distutils
 [Python]: https://python.org
@@ -50,3 +61,4 @@ using a maximum intensity projection.
 [tifffile]: http://www.lfd.uci.edu/~gohlke/code/tifffile.py.html
 [pypi]: https://pypi.python.org/pypi
 [pip-install]: https://pip.pypa.io/en/stable/user_guide/#installing-packages
+[rolling-ball]: https://dx.doi.org/10.1109/MC.1983.1654163
