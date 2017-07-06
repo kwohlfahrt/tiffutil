@@ -3,7 +3,7 @@
 from setuptools import setup
 
 setup(name="TIFF Stack Utils",
-      version="0.0.2",
+      version="0.0.3",
       description="A collection of scripts for working with .tif stacks.",
       packages=['tiffutil'],
       requires=['tifffile (>=0.10.0)', 'numpy (>=1.10)', 'click (>= 5.0)'],

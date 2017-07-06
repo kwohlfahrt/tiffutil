@@ -13,6 +13,8 @@ from .crop import crop
 main.add_command(crop)
 from .unstack import unstack
 main.add_command(unstack)
+from .bin import bin
+main.add_command(bin)
 
 if __name__ == "__main__":
     main()
