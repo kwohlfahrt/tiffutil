@@ -1,13 +1,14 @@
-#!/usr/bin/env python3
-
 from functools import partial
 from itertools import chain, tee
 from contextlib import ExitStack
 import operator as op
 
+from tifffile import TiffWriter
 import numpy as np
 from scipy.ndimage import morphology
-from .project import tiffChain
+import click
+
+from .util import tiffChain, SingleTiffFile
 
 def ball(r, ndim):
     return ellipse((r,) * (ndim + 1))
@@ -31,36 +32,26 @@ def smooth(a, radius, invert=False):
     structure, footprint = ball(radius, a.ndim)
     return function(a, structure=structure, footprint=footprint)
 
-def main(args=None):
-    from sys import argv
-    from argparse import ArgumentParser
-    from tifffile import TiffFile, TiffWriter
-
-    parser = ArgumentParser(description="Smooth an image using the rolling-ball method")
-    parser.add_argument("images", nargs='+', type=partial(TiffFile, multifile=False),
-                        help="The images to smooth")
-    parser.add_argument("output", type=TiffWriter, help="The output filename")
-    parser.add_argument("--radius", type=float, required=True, help="The smoothing radius")
-    parser.add_argument("--invert", action="store_true", help="Invert the image")
-    parser.add_argument("--correct", action="store_true",
-                        help="Subtract the background instead of saving it")
-    args = parser.parse_args(argv[1:] if args is None else args)
-
-    smooth_ = partial(smooth, radius=args.radius, invert=args.invert)
+@click.command("smooth")
+@click.argument("images", nargs=-1, type=SingleTiffFile)
+@click.argument("output", type=TiffWriter)
+@click.option("--radius", type=float, required=True, help="The smoothing radius")
+@click.option("--invert", is_flag=True, help="Invert the image")
+@click.option("--correct", is_flag=True,
+              help="Subtract the background instead of saving it")
+def run_smooth(images, output, radius, invert=False, correct=False):
+    smooth_ = partial(smooth, radius=radius, invert=invert)
 
     with ExitStack() as stack:
-        for tif in args.images:
+        for tif in images:
             stack.enter_context(tif)
-        frames = tiffChain(chain.from_iterable(tif.series for tif in args.images))
-        if args.correct:
+        frames = tiffChain(chain.from_iterable(tif.series for tif in images))
+        if correct:
             frames = tee(frames, 2)
-            output = map(op.sub, frames[1], map(smooth_, frames[0]))
+            data = map(op.sub, frames[1], map(smooth_, frames[0]))
         else:
-            output = map(smooth_, frames)
+            data = map(smooth_, frames)
 
-        with args.output:
-            for frame in output:
-                args.output.save(frame)
-
-if __name__ == "__main__":
-    main()
+        with output:
+            for frame in data:
+                output.save(frame)

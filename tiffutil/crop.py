@@ -1,7 +1,8 @@
-#!/usr/bin/env python3
-
 from pathlib import Path
 from tifffile import imread, imsave
+import click
+
+from .main import main
 
 def parseROI(roi):
     coords = roi.split(",")
@@ -19,22 +20,14 @@ def cropFile(data, roi_path):
         rois = map(tuple, map(reversed, map(parseROI, f)))
         yield from map(lambda roi: data[(Ellipsis,) + roi], rois)
 
-def main(args=None):
-    from argparse import ArgumentParser
-    from sys import argv
+@main.command()
+@click.argument("image", type=Path)
+@click.argument("rois", type=Path)
+@click.option("--prefix", type=str, help="The prefix for the output images.")
+def crop(image, rois, prefix):
+    output_prefix = (prefix if prefix is not None else image.parent / image.stem)
 
-    parser = ArgumentParser(description="Crop an image (sequence) based on a list of ROIs")
-    parser.add_argument("image", type=Path, help="The image to read")
-    parser.add_argument("rois", type=Path, help="The ROIs to extract from the image")
-    parser.add_argument("--prefix", type=str, help="The prefix for the output images.")
-    args = parser.parse_args(argv[1:] if args is None else args)
-
-    output_prefix = args.prefix if args.prefix is not None else args.image.parent / args.image.stem
-
-    image = imread(str(args.image))
-    for i, view in enumerate(fromFile(image, args.rois)):
+    image = imread(str(image))
+    for i, view in enumerate(cropFile(image, rois)):
         outfile_name = "{}{}.tif".format(output_prefix, i)
         imsave(outfile_name, view)
-
-if __name__ == "__main__":
-    main()

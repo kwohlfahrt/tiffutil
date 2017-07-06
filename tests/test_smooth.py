@@ -1,6 +1,14 @@
 from tiffutil.smooth import *
+from tiffutil.main import main
 import numpy as np
 from tifffile import TiffWriter, TiffFile
+
+import pytest
+
+@pytest.fixture()
+def runner():
+    from click.testing import CliRunner
+    return CliRunner()
 
 def test_smooth():
     data = np.array([0.0, 1.0, 2.0, 1.0, 2.0, 1.0, 1.0, 0.0])
@@ -14,7 +22,7 @@ def test_smooth_inverted():
     tolerance = np.array([1e-1, 1e-1, 1e-100, 1e-100, 1e-100, 1e-1, 1e-100, 1e-1])
     np.testing.assert_array_less(abs(smooth(data, 3.0, invert=True) - expected), tolerance)
 
-def test_commandline(tmpdir):
+def test_commandline(tmpdir, runner):
     infile = tmpdir.join('in.tif')
     outfile = tmpdir.join('out.tif')
     data = np.random.uniform(0, 256, size=(100, 100)).astype('float32')
@@ -22,14 +30,15 @@ def test_commandline(tmpdir):
         tif.save(data)
 
     args = [str(infile), str(outfile), "--radius", "2.0"]
-    main(args)
+    result = runner.invoke(main, ["smooth"] + args)
+    assert result.exit_code == 0
 
     with TiffFile(str(outfile)) as tif:
         output = tif.asarray()
 
     np.testing.assert_array_equal(output <= data, True)
 
-def test_commandline_correct(tmpdir):
+def test_commandline_correct(tmpdir, runner):
     infile = tmpdir.join('in.tif')
     outfile = tmpdir.join('out.tif')
     data = np.random.uniform(0, 256, size=(100, 100)).astype('float32')
@@ -37,22 +46,24 @@ def test_commandline_correct(tmpdir):
         tif.save(data)
 
     args = [str(infile), str(outfile), "--radius", "2.0", "--correct"]
-    main(args)
+    result = runner.invoke(main, ["smooth"] + args)
+    assert result.exit_code == 0
 
     with TiffFile(str(outfile)) as tif:
         output = tif.asarray()
 
     np.testing.assert_array_equal(output <= data, True)
 
-def test_commandline_dtype(tmpdir):
+def test_commandline_dtype(tmpdir, runner):
     infile = tmpdir.join('in.tif')
     outfile = tmpdir.join('out.tif')
     data = np.random.uniform(0, 256, size=(100, 100)).astype('uint8')
     with TiffWriter(str(infile)) as tif:
         tif.save(data)
 
-    args = [str(infile), str(outfile), "--radius", "2.0"]
-    main(args)
+    args = [str(infile), str(outfile), "--radius", "2.0", "--correct"]
+    result = runner.invoke(main, ["smooth"] + args)
+    assert result.exit_code == 0
 
     with TiffFile(str(outfile)) as tif:
         output = tif.asarray()

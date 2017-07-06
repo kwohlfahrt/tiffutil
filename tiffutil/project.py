@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-
-from tifffile import TiffFile, TiffWriter
+from tifffile import TiffWriter
 from numpy import mean, median, percentile, fmax, fmin
 from enum import Enum
 from multiprocessing import Pool
@@ -9,6 +7,9 @@ from functools import reduce, partial
 from operator import add
 from contextlib import ExitStack
 from pathlib import Path
+
+import click
+from .util import SingleTiffFile, tiffChain
 
 def rollingMedian(data, width, pool=None):
     from functools import partial
@@ -23,13 +24,6 @@ def rollingMedian(data, width, pool=None):
         return map(partial(median, axis=0), slices)
     else:
         return pool.imap(partial(median, axis=0), slices)
-
-def tiffChain(series, start=None, end=None):
-    from tifffile.tifffile import TiffPageSeries
-    from itertools import chain
-
-    # TODO: Skip files at start which are not read
-    return islice(chain.from_iterable(map(TiffPageSeries.asarray, series)), start, end)
 
 def multiReduce(functions, iterable):
     from functools import reduce
@@ -47,40 +41,32 @@ class Projection(Enum):
     max = fmax
     min = fmin
 
-def main(args=None):
-    from argparse import ArgumentParser
-    from sys import argv
+@click.command()
+@click.argument("images", nargs=-1, type=SingleTiffFile)
+@click.argument("output", type=TiffWriter)
+@click.option("--projection", type=click.Choice(["mean", "max", "min"]), default="max",
+              help="The projection to use")
+@click.option("--filter-size", type=int, default=1,
+              help="The number of frames to running-median filter")
+@click.option("--start", type=int, default=None,
+              help="The frame to start the projection")
+@click.option("--end", type=int, default=None,
+              help="The frame to end the projection")
+def project(images, output, projection, filter_size, start, end):
+    if not images:
+        return
 
-    parser = ArgumentParser(description="Various projections of TIFFs")
-    parser.add_argument("images", nargs='+', type=partial(TiffFile, multifile=False),
-                        help="The image(s) to project")
-    parser.add_argument("output", type=TiffWriter, help="The output filename")
-    parser.add_argument("--projection", type=str,
-                        choices={"mean", "max", "min"}, default="max",
-                        help="The projection to use.")
-    parser.add_argument("--filter-size", type=int, default=1,
-                        help="The number of frames to running-median filter")
-    parser.add_argument("--start", type=int, default=None,
-                        help="The frame to start the projection")
-    parser.add_argument("--end", type=int, default=None,
-                        help="The frame to end the projection")
-    args = parser.parse_args(argv[1:] if args is None else args)
-
-    functions = (count, Projection[args.projection].value)
+    functions = (count, Projection[projection].value)
     with ExitStack() as stack:
-        for tif in args.images:
+        for tif in images:
             stack.enter_context(tif)
-        frames = tiffChain(chain.from_iterable(tif.series for tif in args.images),
-                           args.start, args.end)
-        nframes, projection = multiReduce(
-            functions, rollingMedian(frames, args.filter_size, pool=Pool())
+        frames = tiffChain(chain.from_iterable(tif.series for tif in images), start, end)
+        nframes, projected = multiReduce(
+            functions, rollingMedian(frames, filter_size, pool=Pool())
         )
 
-    with args.output:
-        if args.projection == "mean":
-            args.output.save((projection / nframes).astype('float32'))
+    with output:
+        if projection == "mean":
+            output.save((projected / nframes).astype('float32'))
         else:
-            args.output.save(projection.astype('float32'))
-
-if __name__ == "__main__":
-    main()
+            output.save(projected.astype('float32'))

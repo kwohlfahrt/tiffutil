@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
-from importlib import import_module
+import click
 
+@click.group()
 def main(args=None):
-    from sys import argv
-    if args is None:
-        args = argv
-    _, program, *args = args
+    pass
 
-    mod = import_module('.{}'.format(program), 'tiffutil')
-    mod.main(args)
+from .project import project
+main.add_command(project)
+from .smooth import run_smooth
+main.add_command(run_smooth)
+from .crop import crop
+main.add_command(crop)
+from .unstack import unstack
+main.add_command(unstack)
 
 if __name__ == "__main__":
     main()
