@@ -4,12 +4,7 @@ import numpy as np
 from tifffile import TiffWriter, TiffFile
 
 from tiffutil.unstack import *
-
-from click.testing import CliRunner
-
-@pytest.fixture
-def runner():
-    return CliRunner()
+from util import runner
 
 def test_unstack(tmpdir, runner):
     data = np.random.randint(0, 200, size=(10, 32, 32), dtype='uint8')
