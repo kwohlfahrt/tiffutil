@@ -13,7 +13,7 @@ def runner():
 def test_commandline(tmpdir, runner):
     infile = tmpdir.join('in.tif')
     outfile = tmpdir.join('out.tif')
-    data = np.random.uniform(0, 256, size=(100, 100)).astype('uint32')
+    data = np.random.randint(0, 256, size=(20, 10, 10)).astype('uint32')
     nbins = 4
     expected = np.sum((data[i::nbins] for i in range(nbins)))
     with TiffWriter(str(infile)) as tif:

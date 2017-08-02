@@ -41,7 +41,7 @@ def test_commandline(tmpdir, runner):
 def test_commandline_correct(tmpdir, runner):
     infile = tmpdir.join('in.tif')
     outfile = tmpdir.join('out.tif')
-    data = np.random.uniform(0, 256, size=(100, 100)).astype('float32')
+    data = np.random.randint(0, 256, size=(100, 100)).astype('float32')
     with TiffWriter(str(infile)) as tif:
         tif.save(data)
 
@@ -53,11 +53,12 @@ def test_commandline_correct(tmpdir, runner):
         output = tif.asarray()
 
     np.testing.assert_array_equal(output <= data, True)
+    assert output.shape == data.shape
 
 def test_commandline_dtype(tmpdir, runner):
     infile = tmpdir.join('in.tif')
     outfile = tmpdir.join('out.tif')
-    data = np.random.uniform(0, 256, size=(100, 100)).astype('uint8')
+    data = np.random.randint(0, 256, size=(100, 100)).astype('uint8')
     with TiffWriter(str(infile)) as tif:
         tif.save(data)
 
