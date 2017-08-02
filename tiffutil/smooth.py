@@ -39,13 +39,16 @@ def smooth(a, radius, invert=False):
 @click.option("--invert", is_flag=True, help="Invert the image")
 @click.option("--correct", is_flag=True,
               help="Subtract the background instead of saving it")
-def run_smooth(images, output, radius, invert=False, correct=False):
+@click.option("--dtype", default='int32',
+              help="Data-type to promote to (should be signed)")
+def run_smooth(images, output, radius, invert=False, correct=False, dtype='int32'):
     smooth_ = partial(smooth, radius=radius, invert=invert)
 
     with ExitStack() as stack:
         for tif in images:
             stack.enter_context(tif)
         frames = tiffChain(chain.from_iterable(tif.series for tif in images))
+        frames = map(partial(np.asarray, dtype=dtype), frames)
         if correct:
             frames = tee(frames, 2)
             data = map(op.sub, frames[1], map(smooth_, frames[0]))

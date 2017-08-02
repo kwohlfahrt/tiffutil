@@ -54,19 +54,3 @@ def test_commandline_correct(tmpdir, runner):
 
     np.testing.assert_array_equal(output <= data, True)
     assert output.shape == data.shape
-
-def test_commandline_dtype(tmpdir, runner):
-    infile = tmpdir.join('in.tif')
-    outfile = tmpdir.join('out.tif')
-    data = np.random.randint(0, 256, size=(100, 100)).astype('uint8')
-    with TiffWriter(str(infile)) as tif:
-        tif.save(data)
-
-    args = [str(infile), str(outfile), "--radius", "2.0", "--correct"]
-    result = runner.invoke(main, ["smooth"] + args)
-    assert result.exit_code == 0
-
-    with TiffFile(str(outfile)) as tif:
-        output = tif.asarray()
-    assert output.dtype == np.dtype('uint8')
-    assert output.shape == (100, 100)
