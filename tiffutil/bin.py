@@ -6,12 +6,10 @@ from .util import SingleTiffFile, tiffChain
 
 def iterBin(data, width, pool=None):
     from functools import partial
-    from itertools import tee, islice, count
     from numpy import stack, sum as asum
 
-    slices = tee(data, width)
-    slices = map(lambda data, start: islice(data, start, None, width), slices, count())
-    slices = map(stack, zip(*slices))
+    chunks = zip(*([iter(data)] * width))
+    slices = map(stack, chunks)
 
     func = partial(asum, axis=0, dtype='uint32')
     return map(func, slices) if pool is None else pool.imap(func, slices)

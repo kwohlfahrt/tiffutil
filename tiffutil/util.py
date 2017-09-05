@@ -1,5 +1,6 @@
 from itertools import chain, islice
 from tifffile import TiffFile
+from tifffile.tifffile import TiffPage
 
 def SingleTiffFile(*args, **kwargs):
     return TiffFile(*args, multifile=False)
@@ -13,5 +14,5 @@ def tiffChain(series, start=None, end=None):
     from itertools import chain
 
     # TODO: Skip files at start which are not read
-    data = map(atleast3D, map(TiffPageSeries.asarray, series))
-    return islice(chain.from_iterable(data), start, end)
+    pages = chain.from_iterable(s.pages for s in series)
+    return islice(map(TiffPage.asarray, pages), start, end)

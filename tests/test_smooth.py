@@ -54,3 +54,19 @@ def test_commandline_correct(tmpdir, runner):
 
     np.testing.assert_array_equal(output <= data, True)
     assert output.shape == data.shape
+
+def test_video(tmpdir, runner):
+    infile = tmpdir.join('in.tif')
+    outfile = tmpdir.join('out.tif')
+    data = np.random.uniform(0, 256, size=(10, 100, 100)).astype('float32')
+    with TiffWriter(str(infile)) as tif:
+        tif.save(data)
+
+    args = [str(infile), str(outfile), "--radius", "2.0"]
+    result = runner.invoke(main, ["smooth"] + args)
+    assert result.exit_code == 0
+
+    with TiffFile(str(outfile)) as tif:
+        output = tif.asarray()
+
+    np.testing.assert_array_equal(output <= data, True)

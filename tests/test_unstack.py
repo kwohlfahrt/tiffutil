@@ -7,7 +7,7 @@ from tiffutil.unstack import *
 from util import runner
 
 def test_unstack(tmpdir, runner):
-    data = np.random.randint(0, 200, size=(10, 32, 32), dtype='uint8')
+    data = np.random.randint(0, 200, size=(10, 32, 32)).astype('uint8')
     tifpath = tmpdir.join("test.tif")
     with TiffWriter(str(tifpath)) as f:
         f.save(data)
@@ -22,7 +22,7 @@ def test_unstack(tmpdir, runner):
             np.testing.assert_equal(f.asarray(), expected)
 
 def test_unstack_axis(tmpdir, runner):
-    data = np.random.randint(0, 200, size=(4, 10, 32, 32), dtype='uint8')
+    data = np.random.randint(0, 200, size=(4, 10, 32, 32)).astype('uint8')
     tifpath = tmpdir.join("test.tif")
     with TiffWriter(str(tifpath)) as f:
         f.save(data)
