@@ -14,5 +14,7 @@ def tiffChain(series, start=None, end=None):
     from itertools import chain
 
     # TODO: Skip files at start which are not read
-    pages = chain.from_iterable(s.pages for s in series)
-    return islice(map(TiffPage.asarray, pages), start, end)
+    pages = map(TiffPage.asarray, chain.from_iterable(s.pages for s in series))
+    # Fix ImageJ sometimes storing 3D data in one page
+    pages = chain.from_iterable(map(atleast3D, pages))
+    return islice(pages, start, end)
