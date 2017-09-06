@@ -1,6 +1,7 @@
 from itertools import chain, islice
 from tifffile import TiffFile
 from tifffile.tifffile import TiffPage
+from numpy import dtype
 
 def SingleTiffFile(*args, **kwargs):
     return TiffFile(*args, multifile=False)
@@ -18,3 +19,12 @@ def tiffChain(series, start=None, end=None):
     # Fix ImageJ sometimes storing 3D data in one page
     pages = chain.from_iterable(map(atleast3D, pages))
     return islice(pages, start, end)
+
+def signed(dt):
+    if dt.kind in {'i', 'f'}:
+        return dt
+    elif dt.kind == 'u':
+        size = min(dt.itemsize * 8 * 2, 64)
+        return dtype('int{}'.format(size))
+    else:
+        raise ValueError("Expected an integer dtype, not {}".format(dt))

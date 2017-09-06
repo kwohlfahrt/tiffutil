@@ -1,4 +1,4 @@
-from functools import partial
+from functools import partial, reduce
 from itertools import chain, tee
 from contextlib import ExitStack
 import operator as op
@@ -8,7 +8,7 @@ import numpy as np
 from scipy.ndimage import morphology
 import click
 
-from .util import tiffChain, SingleTiffFile
+from .util import tiffChain, SingleTiffFile, signed
 
 def ball(r, ndim):
     return ellipse((r,) * (ndim + 1))
@@ -39,16 +39,17 @@ def smooth(a, radius, invert=False):
 @click.option("--invert", is_flag=True, help="Invert the image")
 @click.option("--correct", is_flag=True,
               help="Subtract the background instead of saving it")
-@click.option("--dtype", default='int32',
-              help="Data-type to promote to (should be signed)")
-def run_smooth(images, output, radius, invert=False, correct=False, dtype='int32'):
+def run_smooth(images, output, radius, invert=False, correct=False):
     smooth_ = partial(smooth, radius=radius, invert=invert)
 
     with ExitStack() as stack:
         for tif in images:
             stack.enter_context(tif)
+        dtype = reduce(np.promote_types, (s.dtype for s in chain.from_iterable(
+            tif.series for tif in images
+        )))
         frames = tiffChain(chain.from_iterable(tif.series for tif in images))
-        frames = map(partial(np.asarray, dtype=dtype), frames)
+        frames = map(partial(np.asarray, dtype=signed(dtype)), frames)
         if correct:
             frames = tee(frames, 2)
             data = map(op.sub, frames[1], map(smooth_, frames[0]))
@@ -57,4 +58,4 @@ def run_smooth(images, output, radius, invert=False, correct=False, dtype='int32
 
         with output:
             for frame in data:
-                output.save(frame)
+                output.save(frame.astype(dtype))

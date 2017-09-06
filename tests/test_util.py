@@ -47,3 +47,8 @@ def test_limits(tmpdir):
     chained = list(tiffChain(chain.from_iterable(tif.series for tif in tifs), 2, 6))
     assert len(chained) == 4
     assert all(c.shape == shape[1:] for c in chained)
+
+def test_signed():
+    assert signed(np.dtype('uint8')) == np.dtype('int16')
+    assert signed(np.dtype('int8')) == np.dtype('int8')
+    assert signed(np.dtype('float32')) == np.dtype('float32')
