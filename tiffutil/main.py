@@ -15,6 +15,8 @@ from .unstack import unstack
 main.add_command(unstack)
 from .bin import bin
 main.add_command(bin)
+from .plot import plot
+main.add_command(plot)
 
 if __name__ == "__main__":
     main()
