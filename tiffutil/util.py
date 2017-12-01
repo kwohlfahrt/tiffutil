@@ -1,7 +1,10 @@
-from itertools import chain, islice
+from itertools import chain, islice, zip_longest
 from tifffile import TiffFile
 from tifffile.tifffile import TiffPage
 from numpy import dtype
+import numpy as np
+import operator as op
+from functools import partial
 
 def SingleTiffFile(*args, **kwargs):
     return TiffFile(*args, multifile=False)
@@ -28,3 +31,7 @@ def signed(dt):
         return dtype('int{}'.format(size))
     else:
         raise ValueError("Expected an integer dtype, not {}".format(dt))
+
+def chunk(data, width):
+    chunks = zip_longest(*([iter(data)] * width))
+    yield from map(partial(filter, partial(op.is_not, None)), chunks)

@@ -17,6 +17,8 @@ from .bin import bin
 main.add_command(bin)
 from .plot import plot
 main.add_command(plot)
+from .split import split
+main.add_command(split)
 
 if __name__ == "__main__":
     main()
