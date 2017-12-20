@@ -1,5 +1,8 @@
 # TIFF Utils
 
+[![Build Status](https://travis-ci.org/kwohlfahrt/tiffutil.svg?branch=master)](https://travis-ci.org/kwohlfahrt/tiffutil)
+[![codecov](https://codecov.io/gh/kwohlfahrt/tiffutil/branch/master/graph/badge.svg)](https://codecov.io/gh/kwohlfahrt/tiffutil)
+
 A collection of useful scripts for handling .tif stacks.
 
 # Installation
