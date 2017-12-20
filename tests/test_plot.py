@@ -17,7 +17,5 @@ def test_commandline(tmpdir, runner):
         "--channel", "1", "1", "0", str(inputs[1]),
         "--output", str(outpath), "--scalebar", "100", "μm", "1000"
     ]
-    print(' '.join(map(str, args)))
     result = runner.invoke(plot, args)
-    print(result.output)
     assert result.exit_code == 0

@@ -20,6 +20,5 @@ def test_crop(tmpdir, runner):
     outpath = str(tmpdir.join('output{}.tif'))
     result = runner.invoke(split, [tifpath, outpath, "-n", "3"])
     assert result.exit_code == 0
-    print(result.output)
     for i in range(2):
         np.testing.assert_equal(imread(outpath.format(i)), data[i*3:(i+1)*3])
