@@ -2,7 +2,7 @@ from tifffile import TiffWriter
 from numpy import median, fmax, fmin, stack
 from enum import Enum
 from multiprocessing import Pool
-from itertools import chain, islice, tee
+from itertools import chain, islice, tee, count
 from functools import reduce, partial
 from operator import add
 from contextlib import ExitStack
@@ -12,8 +12,6 @@ from .util import SingleTiffFile, tiffChain
 
 
 def rollingMedian(data, width, pool=None):
-    from itertools import count
-
     slices = tee(data, width)
     slices = map(lambda data, start: islice(data, start, None), slices, count())
     slices = map(stack, zip(*slices))
@@ -24,14 +22,10 @@ def rollingMedian(data, width, pool=None):
         return pool.imap(partial(median, axis=0), slices)
 
 
-def multiReduce(functions, iterable):
+def multiReduce(functions, iterables):
     def reducer(accs, values):
         return tuple(map(lambda f, a, v: f(a, v), functions, accs, values))
-    return reduce(reducer, zip(*tee(iterable, len(functions))))
-
-
-def count(acc, v):
-    return acc + 1
+    return reduce(reducer, zip(*iterables))
 
 
 class Projection(Enum):
@@ -55,13 +49,13 @@ def project(images, output, projection, filter_size, start, end):
     if not images:
         return
 
-    functions = (count, Projection[projection].value)
+    functions = (max, Projection[projection].value)
     with ExitStack() as stack:
         for tif in images:
             stack.enter_context(tif)
         frames = tiffChain(chain.from_iterable(tif.series for tif in images), start, end)
         nframes, projected = multiReduce(
-            functions, rollingMedian(frames, filter_size, pool=Pool())
+            functions, [count(1), rollingMedian(frames, filter_size, pool=Pool())]
         )
 
     with output:

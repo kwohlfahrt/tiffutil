@@ -1,6 +1,7 @@
 from tiffutil.util import *
 from tifffile import imsave
 import numpy as np
+import pytest
 
 
 def test_tifchain(tmpdir):
@@ -53,7 +54,18 @@ def test_limits(tmpdir):
     assert all(c.shape == shape[1:] for c in chained)
 
 
-def test_signed():
-    assert signed(np.dtype('uint8')) == np.dtype('int16')
-    assert signed(np.dtype('int8')) == np.dtype('int8')
-    assert signed(np.dtype('float32')) == np.dtype('float32')
+@pytest.mark.parametrize("x, expected", [
+    (np.dtype('uint8'), np.dtype('int16')),
+    (np.dtype('int8'), np.dtype('int8')),
+    (np.dtype('float32'), np.dtype('float32')),
+])
+def test_signed(x, expected):
+    assert signed(x) == expected
+
+
+@pytest.mark.parametrize("x", [
+    np.dtype(('int32', 3)), np.dtype([('foo', 'int32')])
+])
+def test_signed_error(x):
+    with pytest.raises(ValueError):
+        signed(x)
