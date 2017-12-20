@@ -17,8 +17,12 @@ from .unstack import unstack  # noqa: E402
 main.add_command(unstack)
 from .bin import bin  # noqa: E402
 main.add_command(bin)
-from .plot import plot  # noqa: E402
-main.add_command(plot)
+try:
+    from .plot import plot  # noqa: E402
+except ImportError:
+    pass
+else:
+    main.add_command(plot)
 from .split import split  # noqa: E402
 main.add_command(split)
 

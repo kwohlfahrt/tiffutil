@@ -2,6 +2,9 @@ language: python
 python:
   - "3.5"
   - "3.6"
+env:
+  - FEATURES=[plot]
+  - FEATURES=
 matrix:
   include:
     - python: "3.6"
@@ -13,7 +16,7 @@ matrix:
       after_success: []
 install:
   - pip install pytest-cov codecov
-  - pip install .
+  - pip install .${FEATURES}
 script:
   - pytest --cov=tiffutil
 after_success:

@@ -1,7 +1,10 @@
-from tiffutil.plot import *
 import numpy as np
-
 from tifffile import imsave
+import pytest
+
+pytest.importorskip("matplotlib")
+
+from tiffutil.plot import *  # noqa: E402
 
 
 def test_commandline(tmpdir, runner):

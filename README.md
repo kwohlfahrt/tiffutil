@@ -10,7 +10,10 @@ from the source, run:
 
     pip3 install --user git+https://github.com/kwohlfahrt/tiffutil.git
 
-Add the `--upgrade` flag to update to the latest version.
+Add the `--upgrade` flag to update to the latest version. Plotting support must
+be explicitly enabled, as this requires [matplotlib][matplotlib]:
+
+    pip3 install --user git+https://github.com/kwohlfahrt/tiffutil.git[plot]
 
 ## Dependencies
 
@@ -64,6 +67,7 @@ if this is a feature you would like.
 [Python]: https://python.org
 [Numpy]: https://www.numpy.org
 [tifffile]: http://www.lfd.uci.edu/~gohlke/code/tifffile.py.html
+[matplotlib]: https://matplotlib.org
 [pypi]: https://pypi.python.org/pypi
 [pip-install]: https://pip.pypa.io/en/stable/user_guide/#installing-packages
 [rolling-ball]: https://dx.doi.org/10.1109/MC.1983.1654163

@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib
 
 from pathlib import Path
 import click
@@ -19,7 +20,6 @@ def plot(channel, scalebar=None, output=None, figsize=(8.0, 8.0)):
     from matplotlib.text import Text
     from matplotlib.text import Line2D
 
-    import matplotlib
     if output is not None:
         matplotlib.use('Agg')
     import matplotlib.pyplot as plt
