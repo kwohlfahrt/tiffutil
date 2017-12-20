@@ -1,5 +1,4 @@
 from tiffutil.project import *
-from tiffutil.main import main
 from tifffile import TiffWriter, TiffFile
 
 import numpy as np
@@ -34,7 +33,7 @@ def test_commandline(tmpdir, runner):
         tif.save(data)
 
     args = [str(infile), str(outfile), "--projection", "max", "--end", "2"]
-    result = runner.invoke(main, ["project"] + args)
+    result = runner.invoke(project, args)
     assert result.exit_code == 0
 
     with TiffFile(str(outfile)) as tif:

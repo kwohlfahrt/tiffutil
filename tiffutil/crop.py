@@ -2,8 +2,6 @@ from pathlib import Path
 from tifffile import imread, imsave
 import click
 
-from .main import main
-
 
 def parseROI(coords):
     starts, ends = coords[::2], coords[1::2]
@@ -16,7 +14,7 @@ def parseROI(coords):
     return r
 
 
-@main.command()
+@click.command()
 @click.argument("image", type=Path)
 @click.argument("output", type=Path)
 @click.argument("roi", type=str, nargs=-1)

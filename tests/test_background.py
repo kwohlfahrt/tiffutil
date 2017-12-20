@@ -1,5 +1,4 @@
-from tiffutil.smooth import *
-from tiffutil.main import main
+from tiffutil.background import *
 import numpy as np
 from tifffile import TiffWriter, TiffFile
 
@@ -26,7 +25,7 @@ def test_commandline(tmpdir, runner):
         tif.save(data)
 
     args = [str(infile), str(outfile), "--radius", "2.0"]
-    result = runner.invoke(main, ["smooth"] + args)
+    result = runner.invoke(background, args)
     assert result.exit_code == 0
 
     with TiffFile(str(outfile)) as tif:
@@ -43,7 +42,7 @@ def test_commandline_correct(tmpdir, runner):
         tif.save(data)
 
     args = [str(infile), str(outfile), "--radius", "2.0", "--correct"]
-    result = runner.invoke(main, ["smooth"] + args)
+    result = runner.invoke(background, args)
     assert result.exit_code == 0
 
     with TiffFile(str(outfile)) as tif:
@@ -61,7 +60,7 @@ def test_video(tmpdir, runner):
         tif.save(data)
 
     args = [str(infile), str(outfile), "--radius", "2.0"]
-    result = runner.invoke(main, ["smooth"] + args)
+    result = runner.invoke(background, args)
     assert result.exit_code == 0
 
     with TiffFile(str(outfile)) as tif:

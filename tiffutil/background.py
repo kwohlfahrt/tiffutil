@@ -41,7 +41,7 @@ def smooth(a, radius, invert=False):
 @click.option("--invert", is_flag=True, help="Invert the image")
 @click.option("--correct", is_flag=True,
               help="Subtract the background instead of saving it")
-def run_smooth(images, output, radius, invert=False, correct=False):
+def background(images, output, radius, invert=False, correct=False):
     smooth_ = partial(smooth, radius=radius, invert=invert)
 
     with ExitStack() as stack:

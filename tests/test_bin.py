@@ -1,5 +1,4 @@
 from tiffutil.bin import *  # noqa: F401
-from tiffutil.main import main
 import numpy as np
 from tifffile import TiffWriter, TiffFile
 
@@ -14,7 +13,7 @@ def test_commandline(tmpdir, runner):
         tif.save(data)
 
     args = [str(infile), str(outfile), "-n", str(nbins)]
-    result = runner.invoke(main, ["bin"] + args)
+    result = runner.invoke(bin, args)
     assert result.exit_code == 0
 
     with TiffFile(str(outfile)) as tif:
