@@ -1,14 +1,8 @@
-from tiffutil.bin import *
+from tiffutil.bin import *  # noqa: F401
 from tiffutil.main import main
 import numpy as np
 from tifffile import TiffWriter, TiffFile
 
-import pytest
-
-@pytest.fixture()
-def runner():
-    from click.testing import CliRunner
-    return CliRunner()
 
 def test_commandline(tmpdir, runner):
     infile = tmpdir.join('in.tif')

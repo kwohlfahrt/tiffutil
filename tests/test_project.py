@@ -3,20 +3,17 @@ from tiffutil.main import main
 from tifffile import TiffWriter, TiffFile
 
 import numpy as np
-import pytest
 
-@pytest.fixture()
-def runner():
-    from click.testing import CliRunner
-    return CliRunner()
 
 def test_rollingmedian():
     data = iter(range(0, 10))
     expected = list(range(1, 9))
     assert list(rollingMedian(data, 3)) == expected
 
+
 def test_multireduce():
     assert multiReduce([min, max], range(20)) == (0, 19)
+
 
 def test_multireduce_np():
     import numpy as np
@@ -27,6 +24,7 @@ def test_multireduce_np():
     expected = map(np.asarray, ([5, 4, 3], [1, 2, -10]))
     for r, e in zip(reduced, expected):
         assert_equal(r, e)
+
 
 def test_commandline(tmpdir, runner):
     infile = tmpdir.join('in.tif')

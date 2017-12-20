@@ -1,10 +1,8 @@
-import pytest
+from tiffutil.unstack import *
 import numpy as np
 
 from tifffile import TiffWriter, TiffFile
 
-from tiffutil.unstack import *
-from util import runner
 
 def test_unstack(tmpdir, runner):
     data = np.random.randint(0, 200, size=(10, 32, 32)).astype('uint8')
@@ -20,6 +18,7 @@ def test_unstack(tmpdir, runner):
     for output, expected in zip(map(TiffFile, outputs), expecteds):
         with output as f:
             np.testing.assert_equal(f.asarray(), expected)
+
 
 def test_unstack_axis(tmpdir, runner):
     data = np.random.randint(0, 200, size=(4, 10, 32, 32)).astype('uint8')

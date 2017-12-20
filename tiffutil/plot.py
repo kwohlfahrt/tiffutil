@@ -4,8 +4,10 @@ from pathlib import Path
 import click
 from .util import SingleTiffFile
 
+
 def normalize(a):
     return (a - a.min()) / (a.max() - a.min())
+
 
 @click.command()
 @click.option("--channel", type=(float, float, float, SingleTiffFile), multiple=True)
@@ -16,7 +18,6 @@ def plot(channel, scalebar=None, output=None, figsize=(8.0, 8.0)):
     from mpl_toolkits.axes_grid.anchored_artists import AnchoredAuxTransformBox
     from matplotlib.text import Text
     from matplotlib.text import Line2D
-    from matplotlib import colors
 
     import matplotlib
     if output is not None:

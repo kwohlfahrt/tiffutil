@@ -1,20 +1,18 @@
 from tifffile import TiffWriter
-from numpy import mean, median, percentile, fmax, fmin
+from numpy import median, fmax, fmin, stack
 from enum import Enum
 from multiprocessing import Pool
-from itertools import chain, islice
+from itertools import chain, islice, tee
 from functools import reduce, partial
 from operator import add
 from contextlib import ExitStack
-from pathlib import Path
 
 import click
 from .util import SingleTiffFile, tiffChain
 
+
 def rollingMedian(data, width, pool=None):
-    from functools import partial
-    from itertools import tee, count
-    from numpy import stack, median
+    from itertools import count
 
     slices = tee(data, width)
     slices = map(lambda data, start: islice(data, start, None), slices, count())
@@ -25,21 +23,22 @@ def rollingMedian(data, width, pool=None):
     else:
         return pool.imap(partial(median, axis=0), slices)
 
-def multiReduce(functions, iterable):
-    from functools import reduce
-    from itertools import tee
 
+def multiReduce(functions, iterable):
     def reducer(accs, values):
         return tuple(map(lambda f, a, v: f(a, v), functions, accs, values))
     return reduce(reducer, zip(*tee(iterable, len(functions))))
 
+
 def count(acc, v):
     return acc + 1
+
 
 class Projection(Enum):
     mean = add
     max = fmax
     min = fmin
+
 
 @click.command()
 @click.argument("images", nargs=-1, type=SingleTiffFile)

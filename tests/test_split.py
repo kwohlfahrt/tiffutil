@@ -1,9 +1,7 @@
 from tiffutil.split import *
 from tifffile import imsave, imread
-import pytest
 import numpy as np
 
-from util import runner
 
 def test_chunk():
     data = np.arange(100).reshape(20, 5)

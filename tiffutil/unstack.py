@@ -3,12 +3,11 @@ import numpy as np
 
 from contextlib import ExitStack
 from itertools import cycle
-from functools import partial
-from pathlib import Path
 
 from tifffile import TiffWriter
 
 from .util import SingleTiffFile
+
 
 @click.command()
 @click.argument("image", type=SingleTiffFile)

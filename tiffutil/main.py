@@ -1,23 +1,25 @@
 #!/usr/bin/env python3
 import click
 
+
 @click.group()
 def main(args=None):
     pass
 
-from .project import project
+
+from .project import project  # noqa: E402
 main.add_command(project)
-from .smooth import run_smooth
+from .smooth import run_smooth  # noqa: E402
 main.add_command(run_smooth)
-from .crop import crop
+from .crop import crop  # noqa: E402
 main.add_command(crop)
-from .unstack import unstack
+from .unstack import unstack  # noqa: E402
 main.add_command(unstack)
-from .bin import bin
+from .bin import bin  # noqa: E402
 main.add_command(bin)
-from .plot import plot
+from .plot import plot  # noqa: E402
 main.add_command(plot)
-from .split import split
+from .split import split  # noqa: E402
 main.add_command(split)
 
 if __name__ == "__main__":

@@ -4,6 +4,7 @@ from itertools import chain
 
 from .util import SingleTiffFile, tiffChain, chunk
 
+
 @click.command()
 @click.argument("images", nargs=-1, type=SingleTiffFile)
 @click.argument("outfile", type=str)
@@ -19,7 +20,8 @@ def split(images, outfile, n):
     from contextlib import ExitStack
 
     with ExitStack() as stack:
-        for tif in images: stack.enter_context(tif)
+        for tif in images:
+            stack.enter_context(tif)
         frames = tiffChain(chain.from_iterable(tif.series for tif in images))
         for i, c in enumerate(chunk(frames, n)):
             with TiffWriter(outfile.format(i)) as writer:

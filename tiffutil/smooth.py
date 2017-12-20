@@ -10,8 +10,10 @@ import click
 
 from .util import tiffChain, SingleTiffFile, signed
 
+
 def ball(r, ndim):
     return ellipse((r,) * (ndim + 1))
+
 
 def ellipse(rs):
     from functools import reduce
@@ -25,12 +27,14 @@ def ellipse(rs):
     ys = np.sqrt((reduce(sub, xs, 1) * z ** 2).clip(0))
     return ys - ys.max(), ys > 0
 
+
 def smooth(a, radius, invert=False):
     if radius <= 1.0:
-        raise ValueError("Radius must be > 1.0") # due to scipy bug #7202
+        raise ValueError("Radius must be > 1.0")  # due to scipy bug #7202
     function = morphology.grey_closing if invert else morphology.grey_opening
     structure, footprint = ball(radius, a.ndim)
     return function(a, structure=structure, footprint=footprint)
+
 
 @click.command("smooth")
 @click.argument("images", nargs=-1, type=SingleTiffFile)

@@ -1,9 +1,8 @@
 from tiffutil.plot import *
-import pytest
 import numpy as np
 
-from util import runner
 from tifffile import imsave
+
 
 def test_commandline(tmpdir, runner):
     data = [np.random.randint(0, 255, size=(20, 20), dtype='uint8'),

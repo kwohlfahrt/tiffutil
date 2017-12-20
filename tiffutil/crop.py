@@ -4,6 +4,7 @@ import click
 
 from .main import main
 
+
 def parseROI(coords):
     starts, ends = coords[::2], coords[1::2]
 
@@ -13,6 +14,7 @@ def parseROI(coords):
         end = start + int(end[1:]) if end.startswith('+') else int(end)
         r.append(slice(int(start), end))
     return r
+
 
 @main.command()
 @click.argument("image", type=Path)
