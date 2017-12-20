@@ -5,7 +5,12 @@ A collection of useful scripts for handling .tif stacks.
 # Installation
 
 The scripts are designed to be installed with `setup.py`. Detailed instructions
-can be found in the [official documentation][setuptools].
+can be found in the [official documentation][setuptools]. To quickly install
+from the source, run:
+
+    pip3 install --user git+https://github.com/kwohlfahrt/tiffutil.git
+
+Add the `--upgrade` flag to update to the latest version.
 
 ## Dependencies
 
