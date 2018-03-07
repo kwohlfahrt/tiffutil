@@ -8,7 +8,7 @@ from .util import SingleTiffFile, tiffChain, chunk
 @click.command()
 @click.argument("images", nargs=-1, type=SingleTiffFile)
 @click.argument("outfile", type=str)
-@click.option("-n", type=int, required=True)
+@click.option("-n", type=int, required=True, help="The length in frames of each chunk")
 def split(images, outfile, n):
     """Splits input images into chunks, writing them to the output with '{}'
     replaced by the split number.
