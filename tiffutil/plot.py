@@ -16,7 +16,7 @@ def normalize(a):
 @click.option("--output", type=Path)
 @click.option("--figsize", type=(float, float), default=(8.0, 8.0))
 def plot(channel, scalebar=None, output=None, figsize=(8.0, 8.0)):
-    from mpl_toolkits.axes_grid.anchored_artists import AnchoredAuxTransformBox
+    from mpl_toolkits.axes_grid1.anchored_artists import AnchoredAuxTransformBox
     from matplotlib.text import Text
     from matplotlib.text import Line2D
 

@@ -11,7 +11,7 @@ setup(
         'tifffile (>=0.10.0)', 'numpy (>=1.10)', 'click (>= 5.0)', 'scipy (>= 0.19.0)'
     ],
     extras_require={
-        'plot': ['matplotlib'],
+        'plot': ['matplotlib (>=2.0.0)'],
     },
     entry_points={'console_scripts': ['tiffutil=tiffutil.main:main']}
 )
